@@ -1,5 +1,6 @@
 .github/
 __pycache__/
+testlab*.ipynb
 *.pyc
 *.pyo
 *.pyd
