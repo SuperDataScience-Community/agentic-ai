@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Research AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #2e3440 0%, #3b4252 100%);
+            color: #eceff4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #2e3440;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #88c0d0 0%, #5e81ac 100%);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2e3440;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #2e3440;
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+
+        .chat-area {
+            padding: 32px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .chat-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: #3b4252;
+            border-radius: 4px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #4c566a;
+            border-radius: 4px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb:hover {
+            background: #88c0d0;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            border-radius: 16px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background: #4c566a;
+            color: #eceff4;
+            margin-left: 60px;
+        }
+
+        .message.progress {
+            background: rgba(136, 192, 208, 0.1);
+            border-left: 4px solid #88c0d0;
+            color: #88c0d0;
+        }
+
+        .message.result {
+            background: rgba(163, 190, 140, 0.1);
+            border-left: 4px solid #a3be8c;
+            color: #eceff4;
+            line-height: 1.8;
+        }
+
+        .message.result h3 {
+            color: #a3be8c;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .message.result h1,
+        .message.result h2 {
+            color: #88c0d0;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .message.result h4,
+        .message.result h5,
+        .message.result h6 {
+            color: #8fbcbb;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        .message.result p {
+            margin-bottom: 12px;
+        }
+
+        .message.result ul,
+        .message.result ol {
+            margin-left: 24px;
+            margin-bottom: 12px;
+        }
+
+        .message.result li {
+            margin-bottom: 6px;
+        }
+
+        .message.result code {
+            background: #2e3440;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d08770;
+            font-family: 'Courier New', monospace;
+        }
+
+        .message.result pre {
+            background: #2e3440;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 12px;
+        }
+
+        .message.result pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .message.result blockquote {
+            border-left: 4px solid #88c0d0;
+            padding-left: 16px;
+            margin: 12px 0;
+            color: #d8dee9;
+            font-style: italic;
+        }
+
+        .message.result strong {
+            color: #88c0d0;
+            font-weight: 600;
+        }
+
+        .message.result em {
+            color: #b48ead;
+        }
+
+        .message.result a {
+            color: #88c0d0;
+            text-decoration: none;
+        }
+
+        .message.result a:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #4c566a;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-text {
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .input-area {
+            padding: 24px 32px 32px;
+            background: #3b4252;
+            border-top: 1px solid #4c566a;
+        }
+
+        .input-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid #4c566a;
+            border-radius: 12px;
+            background: #2e3440;
+            color: #eceff4;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #88c0d0;
+            box-shadow: 0 0 0 4px rgba(136, 192, 208, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: #4c566a;
+        }
+
+        .submit-btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #88c0d0 0%, #5e81ac 100%);
+            color: #2e3440;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(136, 192, 208, 0.3);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(136, 192, 208, 0.4);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #4c566a;
+            border-top-color: #88c0d0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Deep Research AI</h1>
+            <p>AI-powered research assistant for comprehensive topic analysis</p>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="empty-state">
+                <div class="empty-state-text">Enter a research topic to get started</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <form class="input-form" id="researchForm">
+                <input 
+                    type="text" 
+                    class="input-field" 
+                    id="topicInput" 
+                    placeholder="e.g., The impact of renewable energy adoption on global economies"
+                    required
+                />
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Research
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const chatArea = document.getElementById('chatArea');
+        const researchForm = document.getElementById('researchForm');
+        const topicInput = document.getElementById('topicInput');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function clearEmptyState() {
+            const emptyState = chatArea.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+        }
+
+        function addMessage(content, type) {
+            clearEmptyState();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = content;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function setLoading(isLoading) {
+            submitBtn.disabled = isLoading;
+            if (isLoading) {
+                submitBtn.innerHTML = '<span class="loader"></span>';
+            } else {
+                submitBtn.innerHTML = 'Research';
+            }
+        }
+
+        researchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const topic = topicInput.value.trim();
+            if (!topic) return;
+
+            // Add user message
+            addMessage(topic, 'user');
+            
+            // Clear input and disable form
+            topicInput.value = '';
+            setLoading(true);
+
+            try {
+                const response = await fetch('/research', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ topic: topic })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = JSON.parse(line.slice(6));
+                            
+                            if (data.status === 'progress') {
+                                addMessage(data.message, 'progress');
+                            } else if (data.status === 'complete') {
+                                // Render markdown for the report
+                                const markdownContent = marked.parse(data.report);
+                                addMessage(`<h3>${data.message}</h3>${markdownContent}`, 'result');
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                addMessage(`Error: ${error.message}`, 'progress');
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>
